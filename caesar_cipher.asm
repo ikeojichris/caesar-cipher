@@ -279,17 +279,13 @@ Translate:
 WriteEncResultPreMsg:
     mov rsi,EncResultPreMsg         ; Pass the address of the message buffer
     mov rdx,EncResultPreMsgLen      ; Pass the # of bytes in the message buffer
-    jmp WritePreMsg
+    call PrintToStdout
+    jmp WriteOptResult
 
 WriteDecResultPreMsg:
     mov rsi,DecResultPreMsg         ; Pass the address of the message buffer
     mov rdx,DecResultPreMsgLen      ; Pass the # of bytes in the message buffer
-    
-WritePreMsg:
-    mov rax,1                       ; Declare sys_write operation
-    mov rdi,1                       ; Use File Descriptor 1 ie stdout
-    syscall                         ; Make kernel call
-    jmp WriteOptResult              ; Jump to the procedure which outputs the content of the encrypted message 
+    call PrintToStdout
 
 WriteOptResult:
     mov rax,1                       ; Declare sys_write operation
