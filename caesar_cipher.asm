@@ -172,7 +172,7 @@ global main                         ; Define the entry point of the program for 
 ; MAIN PROGRAM BEGINS HERE
 ;------------------------------------------------------------------------
 main:
-    push rbp
+    push rbp                        ; Create a stack frame for the main function execution
     mov rbp,rsp                     ; Put the stack pointer in the extension base pointer, Debugger --> :)
     
 ; Write the Question:
@@ -304,13 +304,13 @@ Translate:
 WriteEncResultPreMsg:
     mov rsi,EncResultPreMsg         ; Pass the address of the message buffer
     mov rdx,EncResultPreMsgLen      ; Pass the # of bytes in the message buffer
-    call PrintToStdout
-    jmp WriteOptResult
+    call PrintToStdout              ; Print the encryption result pre-message to stdout
+    jmp WriteOptResult              ; 
 
 WriteDecResultPreMsg:
     mov rsi,DecResultPreMsg         ; Pass the address of the message buffer
     mov rdx,DecResultPreMsgLen      ; Pass the # of bytes in the message buffer
-    call PrintToStdout
+    call PrintToStdout              ; Print the decryption result pre-message to stdout
 
 WriteOptResult:
     mov rax,1                       ; Declare sys_write operation
