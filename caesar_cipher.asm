@@ -313,19 +313,15 @@ WriteDecResultPreMsg:
     call PrintToStdout              ; Print the decryption result pre-message to stdout
 
 WriteOptResult:
-    mov rax,1                       ; Declare sys_write operation
-    mov rdi,1                       ; Use File Descriptor 1 ie stdout
     mov rsi,MsgBuff                 ; Pass the address of the message buffer
     mov rdx,r12                     ; Pass the # of bytes in the message buffer
-    syscall                         ; Make kernel call
+    call PrintToStdout              ; Print the encryption or decryption result to stdout
     call Newline                    ; Print newline
 
 Done:
-    mov rax,1                       ; Declare a sys_write call operation
-    mov rdi,2                       ; Specify File Descriptor 2 ie stderr
     mov rsi,DoneMsg                 ; Pass address of the message
     mov rdx,DoneLen                 ; Pass the length of the message
-    syscall                         ; Make kernel call
+    call PrintToStderr              ; Print the done status message to stderr
     
 ; All done! 
     mov rsp,rbp                     ; Clear the main function stack frame
