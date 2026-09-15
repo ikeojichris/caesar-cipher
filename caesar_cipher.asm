@@ -166,6 +166,29 @@ PrintToStderr:
     pop rax
     ret                             ; Return to caller
     
+;------------------------------------------------------------------------
+; ReadFromStdin: Read option and message from stdin
+;------------------------------------------------------------------------ 
+ReadFromStdin:
+    push rax
+    push rbx
+    push rdx
+    push rsi
+    push rdi
+    
+    mov rax,0                       ; Declare a sys_read operation
+    mov rdi,0                       ; Use File Descriptor 0 ie stdin
+    mov rsi,rbx                     ; Pass the address of the buffer to read the message to
+    mov rdx,1                       ; Pass the # of bytes to read
+    syscall                         ; Make kernel call
+    
+    pop rdi
+    pop rsi
+    pop rdx
+    pop rbx
+    pop rax
+    ret                             ; Return to caller
+    
 global main                         ; Define the entry point of the program for the linker
 
 ;------------------------------------------------------------------------
@@ -190,12 +213,9 @@ ReadOpt:
     cmp r14,OPTLEN-1                ; Check if the # of bytes in the buffer is greater than 2 bytes
     ja NullTerminateOptBuff         ; Null terminate the option buffer at 2 OptBuffer address if the text read 
                                     ; from stdin is greater than or equal to 2 bytes
-    
-    mov rax,0                       ; Declare a sys_read operation
-    mov rdi,0                       ; Use File Descriptor 0 ie stdin
-    mov rsi,rbx                     ; Pass the address of the buffer to read the user option to
-    mov rdx,1                       ; Pass the # of bytes to read at one pass
-    syscall                         ; Make kernel call
+                                    
+; Read option ie encryption or decryption from stdin:
+    call ReadFromStdin
     
 ; Null terminate the buffer if the there is no character left:
     cmp rax,0                       ; Check if there is no character to be read from stdin
@@ -229,12 +249,8 @@ ReadMsg:
     ja NullTerminateMsgBuff         ; Null terminate the message buffer at 1024 OptBuffer address if the text read 
                                     ; from stdin is greater than or equal to 1024 bytes
 
-; Read the message to be encrypted into a buffer
-    mov rax,0                       ; Declare a sys_read operation
-    mov rdi,0                       ; Use File Descriptor 0 ie stdin
-    mov rsi,rbx                     ; Pass the address of the buffer to read the message to
-    mov rdx,1                       ; Pass the # of bytes to read
-    syscall                         ; Make kernel call
+; Read the message to be encrypted into a buffer:
+    call ReadFromStdin
 
 ; Null terminate the buffer if the there is no character left:
     cmp rax,0                       ; Check if there is no character to be read from stdin
@@ -325,7 +341,8 @@ Done:
     
 ; All done! 
     mov rsp,rbp                     ; Clear the main function stack frame
-                                    ; NB: rsp will be shifted to rbp to claear the stack frame
+                                    ; NB: RSP address will be replaced by the RBP address, which will move RSP to 
+                                    ; RBP located at it's top on the stack which clear all local variables
                                     
     pop rbp                         ; Remove the main function stack frame base pointer
     ret                             ; Return to the glibc shutdown code
