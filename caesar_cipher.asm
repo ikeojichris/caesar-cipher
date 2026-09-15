@@ -120,6 +120,28 @@ PrintToStdout:
     pop rax
     ret                             ; Return to caller
     
+PrintToStderr:
+; Push all GP registers:
+    push rax                        
+    push rbx
+    push rcx
+    push rdx
+    push rsi
+    push rdi
+    
+    mov rax,1                       ; Declare a sys_write operation
+    mov rdi,2                       ; Use file descriptor 2 ie stdout
+    syscall
+    
+; Pop all GP registers:
+    pop rdi
+    pop rsi
+    pop rdx
+    pop rcx
+    pop rbx
+    pop rax
+    ret                             ; Return to caller
+    
 global main                         ; Define the entry point of the program for the linker
 
 ;------------------------------------------------------------------------
@@ -224,25 +246,24 @@ SelectEncrypt:
     mov rsi,StatEncMsg              ; Pass the address of the status message
     mov rdx,StatEncMsgLen           ; Pass the # of bytes of the status message
     mov rbx,CaesarCipherEncrypt     ; Put the address of encryption translation table in rbx register
-    jmp DoTranslate
-   
+    call PrintToStderr              ; Print message to standard error ie fd=2
+    jmp PrepareRegForTrans
+    
 SelectDecrypt:    
 ; Display the decryption status message via stderr:
     mov rsi,StatDecMsg              ; Pass the address of the status message
     mov rdx,StatDecMsgLen           ; Pass the # of the bytes of the status message
     mov rbx,CaesarCipherDecrypt     ; Put the address of decryption translation table in rbx register
-
-DoTranslate:
-    ; Print the stat message according user option
-    mov rax,1                       ; Declare a sys_write operation
-    mov rdi,2                       ; Use File Descriptor 2 ie stderr
-    syscall                         ; Make kernel call
+    call PrintToStderr              ; Print message to standard error ie fd=2 
     
-    ; Prepare registers for the encryption or decryption operation
+    
+PrepareRegForTrans:
+    ; Prepare registers for the encryption or decryption operation:
     lea rcx,[MsgBuff]               ; Put the address of the message buffer in rcx register
     mov rsi,r12                     ; Put the # of bytes in the message buffer in rsi
-    
+
 Translate:
+    ; Translate the characters in message buffer: 
     xor rax,rax                     ; Clear out the RAX register to be used for character translation
     mov al, byte [rcx-1+rsi]        ; Fetch a character from the message buffer
     mov al, byte [rbx+rax]          ; Translate the fetched character using encryption or decryption translation table
