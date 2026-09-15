@@ -89,17 +89,49 @@ section .bss                        ; Section for uninitialized data
 
 section .text                       ; Section for the code
 
+; Newline Helper Routine:
+Newline:
+    mov rax,1                       ; Declare sys_write operation
+    mov rdi,1                       ; Use file descriptior 1 ie stdout
+    mov rsi,newline                 ; Pass the address of the newline character
+    mov rdx,1                       ; Pass the length of the newline character
+    syscall                         ; Make the sys_write system call
+    ret
+    
+PrintToStdout:
+; Push all GP registers:
+    push rax                        
+    push rbx
+    push rcx
+    push rdx
+    push rsi
+    push rdi
+    
+    mov rax,1                       ; Declare a sys_write operation
+    mov rdi,1                       ; Use file descriptor 1 ie stdout
+    syscall
+    
+; Pop all GP registers:
+    pop rdi
+    pop rsi
+    pop rdx
+    pop rcx
+    pop rbx
+    pop rax
+    ret                             ; Return to caller
+    
 global main                         ; Define the entry point of the program for the linker
 
+;------------------------------------------------------------------------
+; MAIN PROGRAM BEGINS HERE
+;------------------------------------------------------------------------
 main:
     mov rbp,rsp                     ; Put the stack pointer in the extension base pointer, Debugger --> :)
     
 ; Write the Question:
-    mov rax,1                       ; Declare a sys_write operation
-    mov rdi,1                       ; Use file descriptor 1 ie stdout
     mov rsi,Quest                   ; Pass the address of the question message
     mov rdx,QuestLen                ; Pass the # of bytes of the question message
-    syscall                         ; Make kernel call
+    call PrintToStdout
 
 
 ; Prepare registers for processing the user's option whether to perform an encryption or decryption operation:
@@ -258,12 +290,3 @@ Done:
     
 ; All done! 
     ret                             ; Return to the glibc shutdown code
-    
-; Newline Helper Routine:
-Newline:
-    mov rax,1                       ; Declare sys_write operation
-    mov rdi,1                       ; Use file descriptior 1 ie stdout
-    mov rsi,newline                 ; Pass the address of the newline character
-    mov rdx,1                       ; Pass the length of the newline character
-    syscall                         ; Make the sys_write system call
-    ret
