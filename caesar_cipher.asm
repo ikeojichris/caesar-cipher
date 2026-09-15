@@ -89,7 +89,9 @@ section .bss                        ; Section for uninitialized data
 
 section .text                       ; Section for the code
 
-; Newline Helper Routine:
+;------------------------------------------------------------------------
+; Newline: Print a newline to declutter stdout
+;------------------------------------------------------------------------
 Newline:
     ; Push all GP registers:
     push rax                        
@@ -114,6 +116,9 @@ Newline:
     pop rax
     ret
     
+;------------------------------------------------------------------------
+; PrintToStdout: Print all messages to stdout
+;------------------------------------------------------------------------    
 PrintToStdout:
 ; Push all GP registers:
     push rax                        
