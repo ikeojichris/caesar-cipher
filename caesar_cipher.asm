@@ -91,11 +91,27 @@ section .text                       ; Section for the code
 
 ; Newline Helper Routine:
 Newline:
+    ; Push all GP registers:
+    push rax                        
+    push rbx
+    push rcx
+    push rdx
+    push rsi
+    push rdi
+    
     mov rax,1                       ; Declare sys_write operation
     mov rdi,1                       ; Use file descriptior 1 ie stdout
     mov rsi,newline                 ; Pass the address of the newline character
     mov rdx,1                       ; Pass the length of the newline character
     syscall                         ; Make the sys_write system call
+    
+    ; Pop all GP registers:
+    pop rdi
+    pop rsi
+    pop rdx
+    pop rcx
+    pop rbx
+    pop rax
     ret
     
 PrintToStdout:
