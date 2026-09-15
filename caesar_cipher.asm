@@ -117,7 +117,7 @@ Newline:
     ret
     
 ;------------------------------------------------------------------------
-; PrintToStdout: Print all messages to stdout
+; PrintToStdout: Print questions and info to stdout
 ;------------------------------------------------------------------------    
 PrintToStdout:
 ; Push all GP registers:
@@ -141,6 +141,9 @@ PrintToStdout:
     pop rax
     ret                             ; Return to caller
     
+;------------------------------------------------------------------------
+; PrintToStderr: Print status messages to stderr
+;------------------------------------------------------------------------ 
 PrintToStderr:
 ; Push all GP registers:
     push rax                        
@@ -169,6 +172,7 @@ global main                         ; Define the entry point of the program for 
 ; MAIN PROGRAM BEGINS HERE
 ;------------------------------------------------------------------------
 main:
+    push rbp
     mov rbp,rsp                     ; Put the stack pointer in the extension base pointer, Debugger --> :)
     
 ; Write the Question:
@@ -286,8 +290,8 @@ PrepareRegForTrans:
 Translate:
     ; Translate the characters in message buffer: 
     xor rax,rax                     ; Clear out the RAX register to be used for character translation
-    mov al, byte [rcx-1+rsi]        ; Fetch a character from the message buffer
-    mov al, byte [rbx+rax]          ; Translate the fetched character using encryption or decryption translation table
+    mov al,byte [rcx-1+rsi]        ; Fetch a character from the message buffer
+    mov al,byte [rbx+rax]          ; Translate the fetched character using encryption or decryption translation table
     mov byte [rcx-1+rsi],al         ; Put the translation result back into the message buffer
     dec rsi                         ; Decrement the number of characters in the buffer
     jnz Translate                   ; Keep translating the characters if buffer is not empty
@@ -324,4 +328,8 @@ Done:
     syscall                         ; Make kernel call
     
 ; All done! 
+    mov rsp,rbp                     ; Clear the main function stack frame
+                                    ; NB: rsp will be shifted to rbp to claear the stack frame
+                                    
+    pop rbp                         ; Remove the main function stack frame base pointer
     ret                             ; Return to the glibc shutdown code
