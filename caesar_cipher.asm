@@ -220,9 +220,7 @@ Translate:
     mov byte [rcx-1+rsi],al         ; Put the translation result back into the message buffer
     dec rsi                         ; Decrement the number of characters in the buffer
     jnz Translate                   ; Keep translating the characters if buffer is not empty
-    jmp WriteResult                 ; Jump to the operation if translation is complete
 
-WriteResult:
     cmp byte [OptBuff],'1'          ; Check if the user selected an encryption operation
     je WriteEncResultPreMsg         ; Write the encryption pre-message to stdout
     cmp byte [OptBuff],'2'          ; Check if the user selected a decryption operation
