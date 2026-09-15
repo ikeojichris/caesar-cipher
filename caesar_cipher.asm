@@ -133,7 +133,6 @@ main:
     mov rdx,QuestLen                ; Pass the # of bytes of the question message
     call PrintToStdout
 
-
 ; Prepare registers for processing the user's option whether to perform an encryption or decryption operation:
     lea rbx,[OptBuff]               ; Put the address of the option buffer in rbx    
     xor r14,r14                     ; Clear register r14 to bound to bound the option buffer to prevent it from overflowing
@@ -169,11 +168,9 @@ NullTerminateOptBuff:
     mov byte [rbx],0                ; Null terminate the buffer
 
 ; Write the Entry Message:
-    mov rax,1                       ; Declare a sys_write operation
-    mov rdi,1                       ; Use file descriptor 1 ie stdout
     mov rsi,EntryMsg                ; Pass the address of the question message
     mov rdx,EntryMsgLen             ; Pass the # of bytes of the question message
-    syscall                         ; Make kernel call
+    call PrintToStdout              ; Print the entry message to stdout
     
 ; Prepare registers for processing the user's message to be encrypted or decrypted:
     lea rbx,[MsgBuff]               ; Put the start of the message buffer in register rdx
