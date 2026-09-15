@@ -170,6 +170,7 @@ PrintToStderr:
 ; ReadFromStdin: Read option and message from stdin
 ;------------------------------------------------------------------------ 
 ReadFromStdin:
+; Push caller's RAX, RBX, RDX, RSI and RDI
     push rax
     push rbx
     push rdx
@@ -182,6 +183,7 @@ ReadFromStdin:
     mov rdx,1                       ; Pass the # of bytes to read
     syscall                         ; Make kernel call
     
+; Pop caller's RAX, RBX, RDX, RSI and RDI
     pop rdi
     pop rsi
     pop rdx
@@ -288,7 +290,7 @@ SelectEncrypt:
     mov rdx,StatEncMsgLen           ; Pass the # of bytes of the status message
     mov rbx,CaesarCipherEncrypt     ; Put the address of encryption translation table in rbx register
     call PrintToStderr              ; Print message to standard error ie fd=2
-    jmp PrepareRegForTrans
+    jmp PrepareRegForTrans          ; Prepare registers for translation of the characters in the message buffer
     
 SelectDecrypt:    
 ; Display the decryption status message via stderr:
@@ -306,8 +308,8 @@ PrepareRegForTrans:
 Translate:
     ; Translate the characters in message buffer: 
     xor rax,rax                     ; Clear out the RAX register to be used for character translation
-    mov al,byte [rcx-1+rsi]        ; Fetch a character from the message buffer
-    mov al,byte [rbx+rax]          ; Translate the fetched character using encryption or decryption translation table
+    mov al,byte [rcx-1+rsi]         ; Fetch a character from the message buffer
+    mov al,byte [rbx+rax]           ; Translate the fetched character using encryption or decryption translation table
     mov byte [rcx-1+rsi],al         ; Put the translation result back into the message buffer
     dec rsi                         ; Decrement the number of characters in the buffer
     jnz Translate                   ; Keep translating the characters if buffer is not empty
@@ -321,7 +323,7 @@ WriteEncResultPreMsg:
     mov rsi,EncResultPreMsg         ; Pass the address of the message buffer
     mov rdx,EncResultPreMsgLen      ; Pass the # of bytes in the message buffer
     call PrintToStdout              ; Print the encryption result pre-message to stdout
-    jmp WriteOptResult              ; 
+    jmp WriteOptResult              ; Write the result to stdout
 
 WriteDecResultPreMsg:
     mov rsi,DecResultPreMsg         ; Pass the address of the message buffer
@@ -332,7 +334,7 @@ WriteOptResult:
     mov rsi,MsgBuff                 ; Pass the address of the message buffer
     mov rdx,r12                     ; Pass the # of bytes in the message buffer
     call PrintToStdout              ; Print the encryption or decryption result to stdout
-    call Newline                    ; Print newline
+    call Newline                    ; Print newline to stdout
 
 Done:
     mov rsi,DoneMsg                 ; Pass address of the message
