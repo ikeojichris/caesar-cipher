@@ -1,14 +1,14 @@
 ;   Executable name : caesarcipher
 ;   Version         : 1.0
 ;   Created date    : Mon, 07/08/2026
-;   Last Update     : Mon, 15/09/2026
+;   Last Update     : Mon, 27/10/2026
 ;   Author          : Opoku N. Chris
 ;   Description     : An interactive utility program that encrypts 
 ;                     and decrypts text using Caesar Cipher algorithm
 ;
 ; Build using these commands:
-;   nasm -­f elf64 -­g -­ F stabs caesarcipher.asm
-;   ld -­ o caesarcipher caesarcipher.o
+;   nasm -­f elf64 -­g -­F dwarf -o caesar_cipher.o caesar_cipher.asm
+;   ld -­o caesarcipher caesar_cipher.o
 ;               or
 ;   Using SASM editor build and save the the program as an exe file
 ;
