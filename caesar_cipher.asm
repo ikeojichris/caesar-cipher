@@ -191,12 +191,12 @@ ReadFromStdin:
     pop rax
     ret                             ; Return to caller
     
-global main                         ; Define the entry point of the program for the linker
+global _start                       ; Define the entry point of the program for the linker
 
 ;------------------------------------------------------------------------
 ; MAIN PROGRAM BEGINS HERE
 ;------------------------------------------------------------------------
-main:
+_start:
     push rbp                        ; Create a stack frame for the main function execution
     mov rbp,rsp                     ; Put the stack pointer in the extension base pointer, Debugger --> :)
     
